@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Player 2? 🎮✨</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Press Start 2P & Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* Neon Glow Effects */
+        .glow-pink {
+            box-shadow: 0 0 20px rgba(244, 114, 182, 0.4), inset 0 0 10px rgba(244, 114, 182, 0.2);
+        }
+
+        .glow-purple {
+            box-shadow: 0 0 25px rgba(192, 132, 252, 0.4);
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+
+        .text-glow-pink {
+            text-shadow: 0 0 10px rgba(244, 114, 182, 0.8), 0 0 20px rgba(244, 114, 182, 0.5);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 2.5s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ec4899;
+            border-radius: 4px;
+        }
+
+        /* Pixel Grid Background Effect */
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        }
+
+        /* Card Hover Animations */
+        .selection-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .selection-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-grid min-h-screen relative flex flex-col justify-between selection:bg-pink-500 selection:text-white">
+
+    <!-- Floating Background Elements -->
+    <div id="floating-elements" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Top Navigation Bar / Music Controller -->
+    <nav class="relative z-20 w-full max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-full border border-pink-500/30">
+            <span class="inline-block w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="pixel-font text-xs text-pink-300">PLAYER 1 READY</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="sound-btn" class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur-md p-3 rounded-full border border-purple-500/30 text-purple-300 transition-all hover:scale-110 active:scale-95" title="Toggle Sound Effects">
+                <i data-lucide="volume-2" class="w-5 h-5"></i>
+            </button>
+            <button id="music-btn" class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur-md px-4 py-2 rounded-full border border-pink-500/30 text-pink-300 flex items-center gap-2 text-sm font-semibold transition-all hover:scale-105 active:scale-95">
+                <i data-lucide="music" class="w-4 h-4"></i>
+                <span id="music-text">BGM: OFF</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 py-6 flex-grow flex flex-col items-center justify-center">
+
+        <!-- Hero Card Section -->
+        <header class="text-center mb-8 relative">
+            <div class="inline-block mb-3 animate-float">
+                <span class="px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/40 text-pink-300 text-sm font-medium tracking-wide">
+                    💌 OFFICIAL INVITATION 💌
+                </span>
+            </div>
+            <h1 class="pixel-font text-2xl sm:text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-300 to-cyan-300 leading-tight mb-4 text-glow-pink">
+                WILL YOU BE MY PLAYER 2?
+            </h1>
+            <p class="text-slate-300 text-lg sm:text-xl max-w-xl mx-auto font-normal">
+                Press START to customize our ultimate co-op gaming date night! Snacks, laughs, and victory await us. 🎮✨
+            </p>
+        </header>
+
+        <!-- Interactive Form Container -->
+        <div class="w-full bg-slate-900/80 backdrop-blur-xl border-2 border-pink-500/30 rounded-3xl p-6 sm:p-8 glow-pink shadow-2xl space-y-8">
+
+            <!-- Step 1: Game Selection Checklist -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="p-2 bg-pink-500/20 rounded-xl text-pink-400">
+                        <i data-lucide="gamepad-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-pink-300">1. Select Game Playlist</h2>
+                        <p class="text-xs text-slate-400">Choose all games you'd like to play together!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="games-grid">
+                    <!-- Game Item 1 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="It Takes Two" class="sr-only game-checkbox" checked>
+                        <div class="text-2xl mr-3">👩‍❤️‍👨</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">It Takes Two</div>
+                            <div class="text-xs text-slate-400">Ultimate Co-op Quest</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+
+                    <!-- Game Item 2 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="Overcooked! All You Can Eat" class="sr-only game-checkbox" checked>
+                        <div class="text-2xl mr-3">🍳</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">Overcooked!</div>
+                            <div class="text-xs text-slate-400">Delicious Kitchen Chaos</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+
+                    <!-- Game Item 3 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="Stardew Valley" class="sr-only game-checkbox">
+                        <div class="text-2xl mr-3">🌾</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">Stardew Valley</div>
+                            <div class="text-xs text-slate-400">Cozy Farming & Chill</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+
+                    <!-- Game Item 4 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="Mario Kart 8" class="sr-only game-checkbox">
+                        <div class="text-2xl mr-3">🏎️</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">Mario Kart</div>
+                            <div class="text-xs text-slate-400">Friendly Competition</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+
+                    <!-- Game Item 5 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="Minecraft / Roblox" class="sr-only game-checkbox">
+                        <div class="text-2xl mr-3">🧱</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">Minecraft / Sandbox</div>
+                            <div class="text-xs text-slate-400">Build Our Dream World</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+
+                    <!-- Game Item 6 -->
+                    <label class="selection-card relative cursor-pointer flex items-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-pink-500/50 has-[:checked]:bg-pink-950/40 has-[:checked]:border-pink-500 has-[:checked]:glow-pink">
+                        <input type="checkbox" name="games" value="Valorant / FPS Duo" class="sr-only game-checkbox">
+                        <div class="text-2xl mr-3">🎯</div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-slate-200">Valorant / FPS</div>
+                            <div class="text-xs text-slate-400">Tactical Shooter Duo</div>
+                        </div>
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-pink-400 opacity-0 check-icon transition-opacity"></i>
+                    </label>
+                </div>
+
+                <!-- Custom Game Input -->
+                <div class="mt-3">
+                    <input type="text" id="custom-game" placeholder="✨ Or enter a custom game request..." 
+                        class="w-full bg-slate-800/40 border border-slate-700 focus:border-pink-400 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none transition-all focus:ring-2 focus:ring-pink-500/20">
+                </div>
+            </section>
+
+            <!-- Step 2: Snack & Drink Selection -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="p-2 bg-purple-500/20 rounded-xl text-purple-400">
+                        <i data-lucide="utensils" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-purple-300">2. Gamer Fuel (Snacks & Drinks)</h2>
+                        <p class="text-xs text-slate-400">What goodies should I prepare for our session?</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label class="selection-card cursor-pointer flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-purple-500/50 has-[:checked]:bg-purple-950/40 has-[:checked]:border-purple-500 has-[:checked]:glow-purple text-center">
+                        <input type="checkbox" name="snacks" value="🧋 Boba Tea" class="sr-only snack-checkbox" checked>
+                        <span class="text-3xl mb-1.5">🧋</span>
+                        <span class="text-xs font-bold text-slate-200">Boba Tea</span>
+                    </label>
+
+                    <label class="selection-card cursor-pointer flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-purple-500/50 has-[:checked]:bg-purple-950/40 has-[:checked]:border-purple-500 has-[:checked]:glow-purple text-center">
+                        <input type="checkbox" name="snacks" value="🍕 Pizza Party" class="sr-only snack-checkbox" checked>
+                        <span class="text-3xl mb-1.5">🍕</span>
+                        <span class="text-xs font-bold text-slate-200">Hot Pizza</span>
+                    </label>
+
+                    <label class="selection-card cursor-pointer flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-purple-500/50 has-[:checked]:bg-purple-950/40 has-[:checked]:border-purple-500 has-[:checked]:glow-purple text-center">
+                        <input type="checkbox" name="snacks" value="🍿 Butter Popcorn" class="sr-only snack-checkbox">
+                        <span class="text-3xl mb-1.5">🍿</span>
+                        <span class="text-xs font-bold text-slate-200">Popcorn</span>
+                    </label>
+
+                    <label class="selection-card cursor-pointer flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-purple-500/50 has-[:checked]:bg-purple-950/40 has-[:checked]:border-purple-500 has-[:checked]:glow-purple text-center">
+                        <input type="checkbox" name="snacks" value="🟫 Brownies & Sweets" class="sr-only snack-checkbox">
+                        <span class="text-3xl mb-1.5">🍰</span>
+                        <span class="text-xs font-bold text-slate-200">Sweet Treats</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Step 3: Date & Time Selection -->
+            <section class="space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="p-2 bg-cyan-500/20 rounded-xl text-cyan-400">
+                        <i data-lucide="calendar" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-cyan-300">3. Schedule Session</h2>
+                        <p class="text-xs text-slate-400">When is Player 2 available?</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Pick a Date:</label>
+                        <input type="date" id="date-picker" class="w-full bg-slate-800 border border-slate-700 focus:border-cyan-400 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Preferred Time Slot:</label>
+                        <select id="time-picker" class="w-full bg-slate-800 border border-slate-700 focus:border-cyan-400 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none">
+                            <option value="Evening Chill (7:00 PM)">Evening Chill (7:00 PM)</option>
+                            <option value="Late Night Gaming (9:30 PM)">Late Night Gaming (9:30 PM)</option>
+                            <option value="Weekend Afternoon (3:00 PM)">Weekend Afternoon (3:00 PM)</option>
+                            <option value="All Night Marathon! 🌙">All Night Marathon! 🌙</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 4: RSVP Action Section -->
+            <section class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 relative min-h-[100px]" id="rsvp-container">
+                <!-- YES BUTTON -->
+                <button id="yes-btn" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 rounded-2xl font-bold text-lg text-white shadow-lg glow-pink transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 animate-pulse-slow">
+                    <span>YES, I'M IN! 🎮❤️</span>
+                </button>
+
+                <!-- NO / DODGE BUTTON -->
+                <button id="no-btn" class="w-full sm:w-auto px-6 py-4 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-2xl font-semibold text-sm text-slate-400 transition-all duration-200">
+                    <span id="no-text">Let me think... 🤔</span>
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-6 text-center text-xs text-slate-500">
+        Made with ❤️ for the ultimate Player 2 • Press START to play
+    </footer>
+
+    <!-- Celebration Modal (Hidden by Default) -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="w-full max-w-lg bg-slate-900 border-2 border-pink-500 rounded-3xl p-6 sm:p-8 glow-pink shadow-2xl transform scale-95 transition-transform duration-300 relative text-center" id="modal-content">
+
+            <!-- Floating Trophy Header -->
+            <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-purple-500 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg animate-bounce">
+                🏆
+            </div>
+
+            <h3 class="pixel-font text-xl sm:text-2xl text-pink-300 mb-2">GAME ON! READY!</h3>
+            <p class="text-slate-300 text-sm mb-6">PLAYER 2 HAS JOINED THE LOBBY! 🎉</p>
+
+            <!-- Summary Receipt Card -->
+            <div class="bg-slate-950/90 rounded-2xl p-4 text-left border border-slate-800 space-y-3 mb-6 font-mono text-xs text-slate-300">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <span class="text-pink-400 font-bold">DATE PASS:</span>
+                    <span id="receipt-date" class="text-slate-200"></span>
+                </div>
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <span class="text-pink-400 font-bold">TIME:</span>
+                    <span id="receipt-time" class="text-slate-200"></span>
+                </div>
+                <div>
+                    <span class="text-purple-400 font-bold block mb-1">GAMES QUEUED:</span>
+                    <ul id="receipt-games" class="list-disc list-inside text-slate-300 space-y-0.5"></ul>
+                </div>
+                <div>
+                    <span class="text-cyan-400 font-bold block mb-1">SNACKS ORDERED:</span>
+                    <div id="receipt-snacks" class="flex flex-wrap gap-1 text-slate-300"></div>
+                </div>
+            </div>
+
+            <p class="text-xs text-pink-300/80 mb-6 italic">
+                "Get your controller ready, grab your favorite snacks, and prepare for an unforgettable gamer night!"
+            </p>
+
+            <button id="close-modal" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 rounded-xl font-bold text-white text-sm shadow-md transition-all">
+                CAN'T WAIT! SEE YOU THEN ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- Web Audio API / Synth Logic for Retro Sound Effects -->
+    <script>
+        // Audio Context setup
+        let audioCtx = null;
+        let soundEnabled = true;
+        let musicPlaying = false;
+        let bgmOscillators = [];
+        let bgmTimer = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Play Synth Beep (Sound Effect)
+        function playBeep(freq = 440, type = 'sine', duration = 0.1, vol = 0.1) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        // Play Victory Fanfare
+        function playVictorySound() {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        playBeep(freq, 'triangle', 0.25, 0.15);
+                    }, idx * 100);
+                });
+            } catch(e){}
+        }
+
+        // Simple Chiptune Ambient Loop Generator
+        function toggleBGM() {
+            initAudio();
+            const musicBtnText = document.getElementById('music-text');
+            if (musicPlaying) {
+                musicPlaying = false;
+                clearInterval(bgmTimer);
+                musicBtnText.textContent = "BGM: OFF";
+            } else {
+                musicPlaying = true;
+                musicBtnText.textContent = "BGM: ON 🎵";
+                const notes = [261.63, 329.63, 392.00, 440.00, 392.00, 329.63];
+                let noteIdx = 0;
+                bgmTimer = setInterval(() => {
+                    if (musicPlaying && soundEnabled) {
+                        playBeep(notes[noteIdx], 'sine', 0.18, 0.03);
+                        noteIdx = (noteIdx + 1) % notes.length;
+                    }
+                }, 350);
+            }
+        }
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Default Date Picker to Tomorrow
+        const datePicker = document.getElementById('date-picker');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        datePicker.value = tomorrow.toISOString().split('T')[0];
+
+        // Floating Hearts & Pixel Elements Generator
+        const floatingContainer = document.getElementById('floating-elements');
+        const floatIcons = ['💖', '🎮', '✨', '👾', '🌸', '🕹️', '⭐'];
+
+        function createFloatingElement() {
+            const el = document.createElement('div');
+            el.className = 'absolute pointer-events-none select-none text-xl transition-all duration-1000';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.top = '105vh';
+            el.style.opacity = (Math.random() * 0.5 + 0.3).toFixed(2);
+            el.innerText = floatIcons[Math.floor(Math.random() * floatIcons.length)];
+
+            const duration = Math.random() * 8 + 6;
+            el.style.transition = `transform ${duration}s linear, opacity ${duration}s ease-out`;
+
+            floatingContainer.appendChild(el);
+
+            setTimeout(() => {
+                el.style.transform = `translateY(-115vh) rotate(${Math.random() * 360}deg)`;
+            }, 50);
+
+            setTimeout(() => {
+                el.remove();
+            }, duration * 1000);
+        }
+
+        setInterval(createFloatingElement, 900);
+        for(let i = 0; i < 8; i++) setTimeout(createFloatingElement, i * 200);
+
+        // Interactive Checkbox Visual Toggle Sync
+        function updateCheckboxStates() {
+            document.querySelectorAll('.selection-card').forEach(card => {
+                const input = card.querySelector('input');
+                const checkIcon = card.querySelector('.check-icon');
+                if (input && checkIcon) {
+                    if (input.checked) {
+                        checkIcon.classList.remove('opacity-0');
+                    } else {
+                        checkIcon.classList.add('opacity-0');
+                    }
+                }
+            });
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', () => {
+                playBeep(523.25, 'sine', 0.05, 0.05);
+                updateCheckboxStates();
+            });
+        });
+        updateCheckboxStates();
+
+        // Dodging "No" Button Logic
+        const noBtn = document.getElementById('no-btn');
+        const noText = document.getElementById('no-text');
+        let dodgeCount = 0;
+
+        const funnyDodgeMessages = [
+            "Nice try! 😉",
+            "Are you sure? 🥺",
+            "Wrong button! 🎮",
+            "Player 2 needed! 💖",
+            "Give it another think! ✨",
+            "Click YES instead! 🚀",
+            "No option unavailable 😜"
+        ];
+
+        function dodgeNoButton() {
+            playBeep(220, 'sawtooth', 0.08, 0.05);
+            dodgeCount++;
+            
+            // Random message
+            const randomMsg = funnyDodgeMessages[Math.floor(Math.random() * funnyDodgeMessages.length)];
+            noText.textContent = randomMsg;
+
+            // Translate button away to dodge pointer
+            const randomX = (Math.random() - 0.5) * 220;
+            const randomY = (Math.random() - 0.5) * 120;
+            const shrinkScale = Math.max(0.65, 1 - dodgeCount * 0.05);
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(${shrinkScale})`;
+        }
+
+        noBtn.addEventListener('mouseenter', dodgeNoButton);
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            dodgeNoButton();
+        });
+
+        // YES Button / Celebration Trigger
+        const yesBtn = document.getElementById('yes-btn');
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModal = document.getElementById('close-modal');
+
+        yesBtn.addEventListener('click', () => {
+            playVictorySound();
+
+            // Trigger Confetti Explosion
+            confetti({
+                particleCount: 120,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#ec4899', '#c084fc', '#22d3ee', '#f472b6']
+            });
+
+            // Populate Receipt Details
+            const selectedDate = datePicker.value ? new Date(datePicker.value).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Flexible Date';
+            const selectedTime = document.getElementById('time-picker').value;
+
+            // Selected Games
+            const gameCheckboxes = document.querySelectorAll('.game-checkbox:checked');
+            const gamesList = Array.from(gameCheckboxes).map(cb => cb.value);
+            const customGame = document.getElementById('custom-game').value.trim();
+            if (customGame) gamesList.push(`✨ Custom: ${customGame}`);
+
+            // Selected Snacks
+            const snackCheckboxes = document.querySelectorAll('.snack-checkbox:checked');
+            const snacksList = Array.from(snackCheckboxes).map(cb => cb.value);
+
+            // Populate Receipt UI
+            document.getElementById('receipt-date').textContent = selectedDate;
+            document.getElementById('receipt-time').textContent = selectedTime;
+
+            const gamesContainer = document.getElementById('receipt-games');
+            gamesContainer.innerHTML = gamesList.length > 0 
+                ? gamesList.map(g => `<li>${g}</li>`).join('') 
+                : '<li>Co-op Surprises!</li>';
+
+            const snacksContainer = document.getElementById('receipt-snacks');
+            snacksContainer.innerHTML = snacksList.length > 0 
+                ? snacksList.map(s => `<span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-xs">${s}</span>`).join(' ') 
+                : '<span class="text-slate-400">Whatever you crave!</span>';
+
+            // Show Modal with Animation
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        });
+
+        // Close Modal
+        closeModal.addEventListener('click', () => {
+            playBeep(440, 'sine', 0.1, 0.05);
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+        });
+
+        // Music & Sound Buttons
+        document.getElementById('music-btn').addEventListener('click', toggleBGM);
+        document.getElementById('sound-btn').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            const soundBtn = document.getElementById('sound-btn');
+            soundBtn.innerHTML = soundEnabled ? '<i data-lucide="volume-2" class="w-5 h-5"></i>' : '<i data-lucide="volume-x" class="w-5 h-5"></i>';
+            lucide.createIcons();
+            if (soundEnabled) playBeep(587.33, 'sine', 0.1, 0.08);
+        });
+    </script>
+</body>
+</html>
